@@ -16,6 +16,11 @@ Get-Help -Category Provider -Name Alias
 # Some documentation is broken in Alpha, but this would normally show you conceptual help topics
 Get-Help -Category HelpFile
 
+# Get the "online" help for a particular command. This will pop open your web browser.
+# NOTE: A command must support the HelpURI attribute on its CmdletBinding, for this to work.
+# More info: https://blogs.technet.microsoft.com/heyscriptingguy/2013/09/19/helpinfouri-helpuri-and-other-help-mysteries/
+Get-Help -Name Get-Command -Online
+
 # By default, you're shown consolidated help for PowerShell commands
 Get-Help -Name Start-Process
 
@@ -34,5 +39,3 @@ Get-Help -Name Start-Process -Parameter *
 
 # Get help for a specific parameter on the command
 Get-Help -Name Start-Process -Parameter FilePath
-
-Get-Help -Name Start-Process -Detailed
