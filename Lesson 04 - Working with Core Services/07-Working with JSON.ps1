@@ -15,6 +15,13 @@ Get-Process | ConvertTo-Json
 # If we specify a higher depth for serialization, we get more detailed output.
 Get-Process | ConvertTo-Json -Depth 5
 
+# Create a simple PowerShell HashTable and convert it to JSON
+@{
+  FirstName = 'Trevor'
+  LastName = 'Sullivan'
+  Topics = @('PowerShell', 'Motorcycles', 'Mountains', 'Beer')
+} | ConvertTo-Json
+
 # Convert simple JSON structure to a PowerShell object
 $PeopleString = @'
 {
@@ -42,3 +49,4 @@ $People
 
 # Get the first person in the JSON array
 $People.People[0]
+
