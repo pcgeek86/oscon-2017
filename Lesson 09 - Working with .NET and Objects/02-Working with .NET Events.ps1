@@ -7,6 +7,11 @@
 # The -PassThru parameter returns the new Process object that's created
 $Process = Start-Process -FilePath powershell -ArgumentList '-Command Start-Sleep -Seconds 15' -PassThru
 
+# What .NET Events does this object have on it? Let's inspect it with Get-Member.
+$Process | Get-Member -MemberType Event
+
+# Nice, there's an "Exited" event we can subscribe to, to get notified immediately when the process exits!
+
 # Now we call Register-ObjectEvent, specify the object we're subscribing to events for,
 # the name of the event we want to monitor, and the code (aka. "Action") that we want to 
 # occur when the event is triggered.
