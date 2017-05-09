@@ -1,0 +1,106 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+
+  "Description" : "Create an EC2 instance running Ubuntu.",
+
+  "Parameters" : {
+    "KeyName" : {
+      "Description" : "Name of an existing EC2 Keypair to enable SSH access into the server",
+      "Type" : "String"
+    },
+    "EC2Password": {
+      "Description": "The password that will be assigned to the EC2 instance.",
+      "Type": "String"
+    },
+    "InstanceType" : {
+      "Description" : "The type of EC2 instance to launch",
+      "Type" : "String",
+      "Default" : "t2.micro"
+    },
+    "VolumeSize" : {
+      "Description" : "The size of the EBS volume to attach",
+      "Type" : "Number",
+      "Default" : "10"
+    },
+    "SecurityGroup" : {
+      "Description" : "The security group to add the EC2 instance to",
+      "Type" : "String",
+      "Default" : "default"
+    }
+  },
+  "Mappings" : {
+    "AWSInstanceType2Arch" : {
+      "t2.micro" : {"Arch" : "64" }
+    },
+    "AWSRegionArch2AMI" : {
+      "us-east-2" : { "64":"ami-618fab04" }
+    }
+  },
+  "Resources" : {
+    "SSHSecurityGroup": {
+      "Type" : "AWS::EC2::SecurityGroup",
+      "Properties" : {
+        "GroupDescription" : "Enable SSH access",
+        "SecurityGroupIngress" : [
+          {
+            "CidrIp" : "0.0.0.0/0",
+            "FromPort" : -1,
+            "IpProtocol" : -1,
+            "ToPort" : 22
+          }          
+         ]
+      }
+    },
+    "Ec2Instance" : {
+      "Type" : "AWS::EC2::Instance",
+      "Properties" : {
+        "ImageId" :   { "Fn::FindInMap" : [ "AWSRegionArch2AMI", { "Ref" : "AWS::Region" }, 
+                      { "Fn::FindInMap" : [ "AWSInstanceType2Arch", {"Ref" : "InstanceType"}, "Arch"] } ] },
+        "InstanceType" : {"Ref" : "InstanceType" },
+        "SecurityGroupIds": [ { "Ref": "SSHSecurityGroup" } ],
+        "KeyName" : {"Ref" : "KeyName" },
+        "Tags" : [
+          { 
+            "Key" : "Name",
+            "Value" : {"Ref" : "AWS::StackName"} 
+          }
+        ],
+        "UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+          "#cloud-config\n",
+          "apt_update: true\n",
+          "apt_upgrade: true\n",
+          "runcmd:\n",
+          " - adduser --disabled-password --ingroup sudo --gecos '' oscon\n",
+          { "Fn::Sub": [ " - echo 'oscon:${EC2Password}' | chpasswd\n", { "EC2Password": { "Ref": "EC2Password" } } ] },
+          " - sudo sed -i '/PasswordAuthentication no/c\\PasswordAuthentication yes' /etc/ssh/sshd_config\n",
+          " - systemctl reload ssh.service\n",
+          " - wget -qO- https://get.docker.com/ | sh\n",
+          " - usermod -aG docker oscon\n",
+          " - docker pull microsoft/powershell"
+        ] ] } },
+        "BlockDeviceMappings": [
+          {
+            "DeviceName": "/dev/sda1",
+            "Ebs": { "VolumeSize": 30 }
+          }
+        ]
+        }
+      },
+    "ElasticIP" : {
+      "Type" : "AWS::EC2::EIP",
+      "Properties" : {
+        "InstanceId" : { "Ref" : "Ec2Instance" }
+      }
+    }
+  },
+  "Outputs" : {
+    "ElasticIPAddress" : {
+      "Description" : "Public IP address of launched instance.",
+      "Value" : { "Ref" : "ElasticIP" }
+    },
+    "EC2Password": {
+      "Description": "The password to access the EC2 instance, with the 'oscon' username.",
+      "Value": { "Ref": "EC2Password" }
+    }
+  }
+}
