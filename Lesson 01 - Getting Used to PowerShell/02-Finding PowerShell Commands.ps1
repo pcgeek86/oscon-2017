@@ -35,6 +35,3 @@ Get-Command -CommandType Application -Name *config*
 # You can get commands from a specific module version, using a ModuleSpecification object
 # For more information, see: Get-Help -Name Get-Command -Parameter FullyQualifiedModule
 Get-Command -FullyQualifiedModule @{ ModuleName = 'Microsoft.PowerShell.Management'; ModuleVersion = '3.1.0.0' }
-
-# Calling native commands is fairly straightforward
-mkdir -p $HOME/oscon2017test
