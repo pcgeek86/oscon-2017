@@ -8,6 +8,14 @@
 
 'If you use single-quoted strings, you get a literal representation of text, like $Host or $(Get-ChildItem).'
 
+# In double-quoted strings, you can add special characters
+
+# Add a tab to your string
+"`tTrevor"
+
+# Add a new-line to your string
+"Trevor`nDaniel"
+
 # There's a technique called .NET String Formatting, that enables you to build strings
 # using a templating technique.
 # Documentation: https://msdn.microsoft.com/en-us/library/system.string.format(v=vs.110).aspx
@@ -40,7 +48,7 @@ if ($DidMatch) {
   $matches
 }
 
-# Regular expression matches against string arrays (think grep)
+# Now we'll do a regular expression match against an array of strings (think grep)
 $NameList = @'
 Trevor
 Daniel
