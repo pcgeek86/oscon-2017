@@ -2,9 +2,10 @@
 # It's pretty simple, and you can customize as much or as little as you want to.
 # The bare minimum are the first two steps. After that, everything is preferential.
 
-# Install Visual Studio Code
+# Install Visual Studio Code (https://code.visualstudio.com)
 
-# Install the Visual Studio Code PowerShell Extension
+# Install the Visual Studio Code PowerShell Extension (CMD + SHIFT + X)
+  # NOTE: Reload the VSCode window after doing this.
 
 # Open your VSCode User Settings (eg. CMD + ,)
 
